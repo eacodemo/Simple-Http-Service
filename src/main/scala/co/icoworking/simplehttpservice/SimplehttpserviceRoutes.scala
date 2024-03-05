@@ -25,7 +25,7 @@ object SimplehttpserviceRoutes:
     HttpRoutes.of[F] {
       case GET -> Root / "userservice" / id =>
         for {
-          user     <- userService.user(id.toInt) // Option[User] // !!!!
+          user     <- userService.findUser(id.toInt)
           response <- Ok(user)
         } yield response
     }

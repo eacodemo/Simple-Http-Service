@@ -7,7 +7,7 @@ import co.icoworking.simplehttpservice.model._
 
 trait UserService[F[_]]:
   def user(id: Int): F[Usuario]
-
+  def delTicketDePao(in: Int) :Int
 
 object UserService:
   def impl[F[_] : Applicative]: UserService[F] = new UserService[F]:
@@ -22,3 +22,5 @@ object UserService:
         contraseña = "contra",
         tipo = "tipoDeUser"
       ).pure[F]
+
+      def delTicketDePao(in: Int): Int = 1

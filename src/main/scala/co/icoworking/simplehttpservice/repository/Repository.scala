@@ -12,11 +12,11 @@ import doobie.util.transactor.Transactor.Aux
 trait UserRepositoryI:
   def saveUser(usuarioParaGuardar: Usuario): IO[Usuario]
   def findById(id: Int): IO[Usuario]
-  def update(id: Int, updateData: Usuario): IO[Usuario]
-  def deleteUser(id: Int): IO[Unit]
+  //def update(id: Int, updateData: Usuario): IO[Usuario]
+  //def deleteUser(id: Int): IO[Unit]
 
 class UserRepository(transactor: Aux[IO, Unit]) extends UserRepositoryI:
-  override def saveUser(usuarioParaGuardar: Usuario): IO[Usuario] =
+  def saveUser(usuarioParaGuardar: Usuario): IO[Usuario] =
     val insertNewUserSQL = sql"INSERT INTO ...".query[Usuario].unique
     //insertNewUserSQL.transact(transactor) // executa SQL en IO!!!!
     //val program1: doobie.ConnectionIO[Int] = 42.pure[ConnectionIO]
@@ -25,6 +25,6 @@ class UserRepository(transactor: Aux[IO, Unit]) extends UserRepositoryI:
 
   override def findById(id: Int): IO[Usuario] = ???
 
-  override def update(id: Int, updateData: Usuario): IO[Usuario] = ???
+//  override def update(id: Int, updateData: Usuario): IO[Usuario] = ???
 
-  override def deleteUser(id: Int): IO[Unit] = ???
+//  override def deleteUser(id: Int): IO[Unit] = ???

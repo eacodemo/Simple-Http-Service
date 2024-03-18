@@ -1,7 +1,8 @@
 package co.icoworking.simplehttpservice
 
 import cats.effect.{Async, IO}
-import co.icoworking.simplehttpservice.service.{UserService}
+import co.icoworking.simplehttpservice.repository.TareaRepository
+import co.icoworking.simplehttpservice.service.{TareaService, UserService}
 import com.comcast.ip4s.*
 import doobie.Transactor
 import doobie.util.transactor.Transactor.Aux
@@ -10,6 +11,7 @@ import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.middleware.Logger
+import cats.implicits.toSemigroupKOps
 
 object SimplehttpserviceServer:
   def run[F[_]: Async: Network]: F[Nothing] = {
@@ -27,10 +29,14 @@ object SimplehttpserviceServer:
       repositorioUser = new co.icoworking.simplehttpservice.repository.UserRepository(xa)
       // user http service
       userService = UserService.impl[F](ur = repositorioUser)
+      repositorioTarea = new TareaRepository(xa)
+      tareaService = TareaService.impl[F](tr = repositorioTarea)
+      //resolver dependencias
 
       httpApp = (
         //SimplehttpserviceRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
-          SimplehttpserviceRoutes.userServiceRoutes[F](userService)
+          SimplehttpserviceRoutes.userServiceRoutes[F](userService)   <+>
+          SimplehttpserviceRoutes.tareaServiceRoutes[F](tareaService)
       ).orNotFound
 
       finalHttpApp = Logger.httpApp(true, true)(httpApp)

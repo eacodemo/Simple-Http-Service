@@ -15,6 +15,16 @@ trait UserRepositoryI:
   //def update(id: Int, updateData: Usuario): IO[Usuario]
   //def deleteUser(id: Int): IO[Unit]
 
+trait TareaRepositoryI:
+  def saveTarea(guardarTarea: Tarea): IO[Tarea]
+  def encontrarPorId(id: Int): IO[Tarea]
+  
+class TareaRepository(transactor: Aux[IO, Unit]) extends TareaRepositoryI:
+  def saveTarea(guardarTarea: Tarea): IO[Tarea] =
+    val insertNewTareaSql = sql"INSERT INTO ...".query[Tarea].unique
+    insertNewTareaSql.transact(transactor)
+  def encontrarPorId(id: Int): IO[Tarea] = ???
+
 class UserRepository(transactor: Aux[IO, Unit]) extends UserRepositoryI:
   def saveUser(usuarioParaGuardar: Usuario): IO[Usuario] =
     val insertNewUserSQL = sql"INSERT INTO ...".query[Usuario].unique

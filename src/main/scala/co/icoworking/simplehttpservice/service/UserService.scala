@@ -1,7 +1,7 @@
 package co.icoworking.simplehttpservice.service
 
 import cats.Applicative
-import cats.effect.IO
+//import cats.effect.IO
 import cats.syntax.all.*
 import co.icoworking.simplehttpservice.model.*
 import co.icoworking.simplehttpservice.repository.UserRepository
@@ -9,10 +9,10 @@ import co.icoworking.simplehttpservice.repository.UserRepository
 // Iterface de Usuarion HTTP API
 trait UserService[F[_]]:
   def findUser(id: Int): F[Usuario] // HTTP GET
-  def saveUser(u: Usuario): F[Usuario] // HTTP POST
+  //def saveUser(u: Usuario): F[Usuario] // HTTP POST
 
 class UserServiceImpl[F[_] : Applicative](userRepository: UserRepository) extends UserService[F]:
-  override def findUser(id: Int): F[Usuario] =
+  def findUser(id: Int): F[Usuario] = {
     val user = Usuario(
       ID = 0,
       nombreUsuario = "Dawid",
@@ -20,12 +20,12 @@ class UserServiceImpl[F[_] : Applicative](userRepository: UserRepository) extend
       contraseña = "contra",
       tipo = "tipoDeUser"
     )
-    val usarioEncontrado: IO[Usuario] = userRepository.findById(id)
+    val usarioEncontrado = userRepository.findById(id)
     println(s"$usarioEncontrado")
-//    usarioEncontrado.pure[F]
+    //    usarioEncontrado.pure[F]
     user.pure[F] // fix me
-
-  override def saveUser(u: Usuario): F[Usuario] = ??? // implemnt me
+  }
+  //override def saveUser(u: Usuario): F[Usuario] = ??? // implemnt me
 
 object UserService:
   def impl[F[_] : Applicative](ur: UserRepository): UserService[F] = new UserServiceImpl[F](userRepository = ur)

@@ -31,7 +31,5 @@ class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) exten
     insertNewUserSQL.transact(transactor)
 
   override def findById(id: Int): F[Usuario] = ???
-
   override def update(id: Int, updateData: Usuario): F[Usuario] = ???
-
   override def deleteUser(id: Int): F[Unit] = ???

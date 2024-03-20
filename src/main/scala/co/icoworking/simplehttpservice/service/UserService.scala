@@ -1,7 +1,6 @@
 package co.icoworking.simplehttpservice.service
 
 import cats.Applicative
-import cats.effect.IO
 import cats.syntax.all.*
 import co.icoworking.simplehttpservice.model.*
 import co.icoworking.simplehttpservice.repository.UserRepository
@@ -25,7 +24,6 @@ class UserServiceImpl[F[_] : Applicative](userRepository: UserRepository[F]) ext
     println(s"$usarioEncontrado")
     usarioEncontrado // fixed!!!! violaaa!
     //user.pure[F] // fix me
-
   override def saveUser(u: Usuario): F[Usuario] = ??? // implemnt me
 
 object UserService:

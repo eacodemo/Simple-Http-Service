@@ -17,7 +17,7 @@ object SimplehttpserviceServer:
       client <- EmberClientBuilder.default[F].build // todo Change me
       //helloWorldAlg: HelloWorld[F] = HelloWorld.impl[F]
 
-      xa: Aux[IO, Unit] = Transactor.fromDriverManager[IO](
+      xa = Transactor.fromDriverManager[F](
         driver = "org.postgresql.Driver", // JDBC driver classname
         url = "jdbc:postgresql:world",    // Connect URL
         user = "postgres",                // Database user name

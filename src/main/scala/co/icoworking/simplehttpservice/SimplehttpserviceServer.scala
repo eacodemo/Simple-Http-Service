@@ -1,10 +1,10 @@
 package co.icoworking.simplehttpservice
 
-import cats.effect.{Async, IO}
+import cats.effect.{Async}
 import co.icoworking.simplehttpservice.service.{UserService}
 import com.comcast.ip4s.*
 import doobie.Transactor
-import doobie.util.transactor.Transactor.Aux
+//import doobie.util.transactor.Transactor.Aux
 import fs2.io.net.Network
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder

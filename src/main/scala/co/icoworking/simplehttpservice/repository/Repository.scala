@@ -2,16 +2,16 @@ package co.icoworking.simplehttpservice.repository
 
 import doobie.util.transactor.Transactor
 import cats.*
-import cats.effect.IO
-import cats.implicits.*
+//import cats.effect.IO
+//import cats.implicits.*
 import cats.effect.*
 import co.icoworking.simplehttpservice.model.*
-import doobie.util.transactor.Transactor.Aux
-import doobie.WeakAsync.doobieWeakAsyncForAsync
-import fs2.Compiler.Target.forConcurrent
-import fs2.Compiler.Target.forSync
+//import doobie.util.transactor.Transactor.Aux
+//import doobie.WeakAsync.doobieWeakAsyncForAsync
+//import fs2.Compiler.Target.forConcurrent
+//import fs2.Compiler.Target.forSync
 import cats.effect.Async
-import cats.effect.syntax.all._
+//import cats.effect.syntax.all._
 import doobie._
 import doobie.implicits._
 

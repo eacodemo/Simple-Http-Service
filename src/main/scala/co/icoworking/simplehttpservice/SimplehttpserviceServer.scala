@@ -1,8 +1,7 @@
 package co.icoworking.simplehttpservice
 
 import cats.effect.{Async, IO}
-import cats.implicits.toSemigroupKOps
-import co.icoworking.simplehttpservice.service.{HelloWorld, UserService}
+import co.icoworking.simplehttpservice.service.{UserService}
 import com.comcast.ip4s.*
 import doobie.Transactor
 import doobie.util.transactor.Transactor.Aux
@@ -16,9 +15,9 @@ object SimplehttpserviceServer:
   def run[F[_]: Async: Network]: F[Nothing] = {
     for {
       client <- EmberClientBuilder.default[F].build // todo Change me
-      helloWorldAlg: HelloWorld[F] = HelloWorld.impl[F]
+      //helloWorldAlg: HelloWorld[F] = HelloWorld.impl[F]
 
-      xa: Aux[IO, Unit] = Transactor.fromDriverManager[IO](
+      xa = Transactor.fromDriverManager[F](
         driver = "org.postgresql.Driver", // JDBC driver classname
         url = "jdbc:postgresql:world",    // Connect URL
         user = "postgres",                // Database user name
@@ -30,7 +29,7 @@ object SimplehttpserviceServer:
       userService = UserService.impl[F](ur = repositorioUser)
 
       httpApp = (
-        SimplehttpserviceRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
+        //SimplehttpserviceRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
           SimplehttpserviceRoutes.userServiceRoutes[F](userService)
       ).orNotFound
 

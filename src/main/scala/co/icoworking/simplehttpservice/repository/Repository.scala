@@ -22,8 +22,21 @@ trait UserRepositoryI[F[_] : Applicative]:
   def update(id: Int, updateData: Usuario): F[Usuario]
   def deleteUser(id: Int): F[Unit]
 
+
+trait TareaRepositoryI[F[_]: Applicative]:
+  def saveTarea(guardarTarea: Tarea): F[Tarea]
+  def encontrarPorId(id: Int): F[Tarea]
+  
+class TareaRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends TareaRepositoryI[F]:
+  def saveTarea(guardarTarea: Tarea): F[Tarea] =
+    val insertNewTareaSql = sql"INSERT INTO ...".query[Tarea].unique
+    insertNewTareaSql.transact(transactor)
+  def encontrarPorId(id: Int): F[Tarea] = ???
+
+
 class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) extends UserRepositoryI[F]:
   override def saveUser(usuarioParaGuardar: Usuario): F[Usuario] =
+
     val insertNewUserSQL = sql"INSERT INTO ...".query[Usuario].unique
     //insertNewUserSQL.transact(transactor) // executa SQL en IO!!!!
     //val program1: doobie.ConnectionIO[Int] = 42.pure[ConnectionIO]

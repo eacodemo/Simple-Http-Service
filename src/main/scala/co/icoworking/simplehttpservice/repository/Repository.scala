@@ -24,14 +24,14 @@ trait UserRepositoryI[F[_] : Applicative]:
 
 
 trait TareaRepositoryI[F[_]: Applicative]:
-  def saveTarea(guardarTarea: Tarea): IO[Tarea]
-  def encontrarPorId(id: Int): IO[Tarea]
+  def saveTarea(guardarTarea: Tarea): F[Tarea]
+  def encontrarPorId(id: Int): F[Tarea]
   
-class TareaRepository[F[_]: Applicative](transactor: Aux[IO, Unit]) extends TareaRepositoryI[F]:
-  def saveTarea(guardarTarea: Tarea): IO[Tarea] =
+class TareaRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends TareaRepositoryI[F]:
+  def saveTarea(guardarTarea: Tarea): F[Tarea] =
     val insertNewTareaSql = sql"INSERT INTO ...".query[Tarea].unique
     insertNewTareaSql.transact(transactor)
-  def encontrarPorId(id: Int): IO[Tarea] = ???
+  def encontrarPorId(id: Int): F[Tarea] = ???
 
 
 class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) extends UserRepositoryI[F]:

@@ -10,7 +10,7 @@ import co.icoworking.simplehttpservice.model.*
 trait TareaService[F[_]]:
   def encontrarTarea(id: Int): F[Tarea]
 
-class TareaServiceImpl[F[_]: Applicative](tareaRepository: TareaRepository) extends TareaService[F]:
+class TareaServiceImpl[F[_]: Applicative](tareaRepository: TareaRepository[F]) extends TareaService[F]:
   def encontrarTarea(id: Int): F[Tarea] = {
     val tarea = Tarea (
       ID = 1,
@@ -25,7 +25,7 @@ class TareaServiceImpl[F[_]: Applicative](tareaRepository: TareaRepository) exte
 
 
 object TareaService:
-  def impl[F[_] : Applicative](tr: TareaRepository): TareaService[F] = new TareaServiceImpl[F](tareaRepository = tr) {}
+  def impl[F[_] : Applicative](tr: TareaRepository[F]): TareaService[F] = new TareaServiceImpl[F](tareaRepository = tr) {}
 
 //context bound
 // idiomatic

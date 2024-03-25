@@ -15,11 +15,11 @@ trait UserRepositoryI:
   //def update(id: Int, updateData: Usuario): IO[Usuario]
   //def deleteUser(id: Int): IO[Unit]
 
-trait TareaRepositoryI:
+trait TareaRepositoryI[F[_]: Applicative]:
   def saveTarea(guardarTarea: Tarea): IO[Tarea]
   def encontrarPorId(id: Int): IO[Tarea]
   
-class TareaRepository(transactor: Aux[IO, Unit]) extends TareaRepositoryI:
+class TareaRepository[F[_]: Applicative](transactor: Aux[IO, Unit]) extends TareaRepositoryI[F]:
   def saveTarea(guardarTarea: Tarea): IO[Tarea] =
     val insertNewTareaSql = sql"INSERT INTO ...".query[Tarea].unique
     insertNewTareaSql.transact(transactor)

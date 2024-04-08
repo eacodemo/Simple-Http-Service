@@ -2,12 +2,11 @@ package co.icoworking.simplehttpservice
 
 import cats.effect.kernel.Resource
 import cats.effect.Async
-import co.icoworking.simplehttpservice.repository.TareaRepository
+import co.icoworking.simplehttpservice.repository.{TareaRepository, UserRepository}
 import co.icoworking.simplehttpservice.service.{TareaService, UserService}
 import com.comcast.ip4s.*
 import doobie.Transactor
 import fs2.io.net.Network
-//import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.middleware.Logger
@@ -17,16 +16,24 @@ import org.http4s.HttpApp
 object SimplehttpserviceServer:
   def run[F[_]: Async: Network]: F[Nothing] = {
 
-    val init: HttpApp[F] = {
-      val xa = Transactor.fromDriverManager[F](
-        driver = "org.postgresql.Driver", // JDBC driver classname
-        url = "jdbc:postgresql:world", // Connect URL
-        user = "postgres", // Database user name
-        password = "password", // Database password
+    def connectionWithDabase = { // solo y solo una unica responsabilidad!!
+      val DriverJDBC = "org.postgresql.Driver"
+      val URLJDBC = "jdbc:postgresql:world"
+      val UserDabase = "postgres"
+      val PasswordDabase = "password"
+      Transactor.fromDriverManager[F](
+        driver     = DriverJDBC, // JDBC driver classname
+        url        = URLJDBC, // Connect URL
+        user       = UserDabase, // Database user name
+        password   = PasswordDabase, // Database password
         logHandler = None // Don't setup logging for now. See Logging page for how to log events in detail
       )
+    }
+
+    val init: HttpApp[F] = {
+      val xa = connectionWithDabase
       // user http service
-      val userService = UserService.impl[F](ur = new co.icoworking.simplehttpservice.repository.UserRepository(xa))
+      val userService = UserService.impl[F](ur = new UserRepository(xa))
       val tareaService = TareaService.impl[F](tr = new TareaRepository(xa))
 
       val httpApp = (

@@ -1,11 +1,11 @@
 package co.icoworking.simplehttpservice
 
-import cats.effect.{Async, IO}
+import cats.effect.kernel.Resource
+import cats.effect.{Async}
 import co.icoworking.simplehttpservice.repository.TareaRepository
 import co.icoworking.simplehttpservice.service.{TareaService, UserService}
 import com.comcast.ip4s.*
 import doobie.Transactor
-import doobie.util.transactor.Transactor.Aux
 import fs2.io.net.Network
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
@@ -15,7 +15,7 @@ import cats.implicits.toSemigroupKOps
 
 object SimplehttpserviceServer:
   def run[F[_]: Async: Network]: F[Nothing] = {
-    for {
+    val k: Resource[F, Unit] = for {
       client <- EmberClientBuilder.default[F].build // todo Change me
       //helloWorldAlg: HelloWorld[F] = HelloWorld.impl[F]
 
@@ -48,4 +48,5 @@ object SimplehttpserviceServer:
           .withHttpApp(finalHttpApp)
           .build
     } yield ()
-  }.useForever
+    k.useForever
+  }

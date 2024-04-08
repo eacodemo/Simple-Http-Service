@@ -1,11 +1,8 @@
 package co.icoworking.simplehttpservice.service
 
 import cats.Applicative
-import cats.syntax.all.*
 import co.icoworking.simplehttpservice.model.*
 import co.icoworking.simplehttpservice.repository.UserRepository
-import cats.effect._
-import cats.effect.syntax.all._
 // Iterface de Usuarion HTTP API
 trait UserService[F[_]: Applicative]:
   def findUser(id: Int): F[Usuario] // HTTP GET
@@ -13,13 +10,6 @@ trait UserService[F[_]: Applicative]:
 
 class UserServiceImpl[F[_] : Applicative](userRepository: UserRepository[F]) extends UserService[F]:
   override def findUser(id: Int): F[Usuario] =
-    val user = Usuario(
-      ID = 0,
-      nombreUsuario = "Dawid",
-      email = "mail@mail.co",
-      contraseña = "contra",
-      tipo = "tipoDeUser"
-    )
     val usarioEncontrado = userRepository.findById(id)
     println(s"$usarioEncontrado")
     usarioEncontrado // fixed!!!! violaaa!

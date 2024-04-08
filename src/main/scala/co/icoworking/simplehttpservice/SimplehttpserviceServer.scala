@@ -46,6 +46,7 @@ object SimplehttpserviceServer:
     val IpHttp: Ipv4Address = ipv4"0.0.0.0"
     val PortHttp: Port = port"8080"
     val application: Resource[F, Unit] = for {
+      // Integrar Flyway DB DDL SQL 
       _ <- EmberServerBuilder.default[F]
           .withHost(IpHttp)
           .withPort(PortHttp)

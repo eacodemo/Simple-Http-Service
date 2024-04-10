@@ -3,7 +3,6 @@ package co.icoworking.simplehttpservice.model
 import io.circe.{Encoder, Json}
 import org.http4s.EntityEncoder
 import org.http4s.circe.*
-
 import java.sql.Date
 
 final case class Usuario(
@@ -47,8 +46,23 @@ object Proyecto:
       ("id", Json.fromInt(proyecto.id)),
       ("nombre", Json.fromString(proyecto.nombre)),
     )
+  given [F[_]]: EntityEncoder[F, Proyecto] = jsonEncoderOf[F,Proyecto]
 
-
+case class HistoriaUsuario(id: Int,
+                           detalles: String,
+                           criteriosAceptacion: String,
+                           estado: String,
+                           idProyecto: Int,
+                           idTareaAsociada: Option[Int]
+                          )
+object HistoriaUsuario:
+  given Encoder[HistoriaUsuario] = new Encoder[HistoriaUsuario]:
+    override def apply(ha: HistoriaUsuario): Json = Json.obj(
+      ("id", Json.fromInt(ha.id)),
+      ("detalles", Json.fromString(ha.detalles)),
+      ("criterios de aceptacion", Json.fromString(ha.criteriosAceptacion)),
+      ("estado", Json.fromString(ha.estado)),
+    )
+  given [F[_]]: EntityEncoder[F, HistoriaUsuario] = jsonEncoderOf[F,HistoriaUsuario]
 
 //case class AsociacionProyectoUsuario(ID: Int, IDProyecto: Int, IDUsuario: Int, Rol: String)
-//case class HistoriaUsuario(ID: Int, detalles: String, criteriosAceptacion: String, estado: String, IDProyecto: Int, IDTareaAsociada: Option[Int])

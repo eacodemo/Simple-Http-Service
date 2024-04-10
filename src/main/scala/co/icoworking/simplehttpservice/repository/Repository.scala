@@ -23,12 +23,14 @@ trait UserRepositoryI[F[_] : Applicative]:
 trait TareaRepositoryI[F[_]: Applicative]:
   def saveTarea(guardarTarea: Tarea): F[Tarea]
   def findById(id: Int): F[Tarea]
-  
+
 trait ProyectoRepositoryI[F[_]: Applicative]:
   def saveProject(guardarProyecto: Proyecto): F[Proyecto]
   def findById(id: Int): F[Proyecto]
-  
-  
+
+trait HistoriaUsuarioRepositoryI[F[_] : Applicative]:
+  def saveHA(guardarHA: HistoriaUsuario): F[HistoriaUsuario]
+  def findById(id: Int): F[HistoriaUsuario]
 
 class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) extends UserRepositoryI[F]:
   
@@ -67,3 +69,7 @@ class TareaRepository[F[_]: Applicative: Async](transactor: Transactor[F]) exten
 class ProyectoRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends  ProyectoRepositoryI[F]:
   override def saveProject(guardarProyecto: Proyecto): F[Proyecto] = ???
   override def findById(id: Int): F[Proyecto] = ???
+
+class HistoriaUsuarioRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends  HistoriaUsuarioRepositoryI[F]:
+  override def saveHA(guardarHA: HistoriaUsuario): F[HistoriaUsuario] = ???
+  override def findById(id: Int): F[HistoriaUsuario] = ???

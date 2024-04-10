@@ -22,14 +22,13 @@ trait UserRepositoryI[F[_] : Applicative]:
 
 trait TareaRepositoryI[F[_]: Applicative]:
   def saveTarea(guardarTarea: Tarea): F[Tarea]
-  def encontrarPorId(id: Int): F[Tarea]
+  def findById(id: Int): F[Tarea]
   
-class TareaRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends TareaRepositoryI[F]:
-  def saveTarea(guardarTarea: Tarea): F[Tarea] =
-    val insertNewTareaSql = sql"INSERT INTO Tarea ()".query[Tarea].unique
-    insertNewTareaSql.transact(transactor)
-  def encontrarPorId(id: Int): F[Tarea] = ???
-
+trait ProyectoRepositoryI[F[_]: Applicative]:
+  def saveProject(guardarProyecto: Proyecto): F[Proyecto]
+  def findById(id: Int): F[Proyecto]
+  
+  
 
 class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) extends UserRepositoryI[F]:
   
@@ -56,5 +55,15 @@ class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) exten
         .transact(transactor)
         .void
     deleteUser
-    
-    
+
+
+class TareaRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends TareaRepositoryI[F]:
+  override def saveTarea(guardarTarea: Tarea): F[Tarea] =
+    val insertNewTareaSql = sql"INSERT INTO Tarea ()".query[Tarea].unique
+    insertNewTareaSql.transact(transactor)
+  override def findById(id: Int): F[Tarea] = ???
+
+
+class ProyectoRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends  ProyectoRepositoryI[F]:
+  override def saveProject(guardarProyecto: Proyecto): F[Proyecto] = ???
+  override def findById(id: Int): F[Proyecto] = ???

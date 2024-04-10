@@ -4,8 +4,8 @@ import io.circe.{Encoder, Json}
 import org.http4s.EntityEncoder
 import org.http4s.circe.*
 
-final case class Usuario(ID: Int,
-                   nombreUsuario: String,
+final case class Usuario(id: Int,
+                   nombre: String,
                    email: String,
                    contraseña: String,
                    tipo: String)

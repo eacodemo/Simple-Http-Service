@@ -14,7 +14,7 @@ object Tables{
 // Interface CRUD para Usuario
 trait UserRepositoryI[F[_] : Applicative]:
   def saveUser(usuarioParaGuardar: Usuario): F[Usuario]
-  def findById(id: Int): F[Usuario]
+  def findById(id: Int): F[Option[Usuario]]
   def update(id: Int, updateData: Usuario): F[Usuario]
   def deleteUser(id: Int): F[Unit]
 
@@ -30,10 +30,20 @@ class TareaRepository[F[_]: Applicative: Async](transactor: Transactor[F]) exten
 
 
 class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) extends UserRepositoryI[F]:
+  
   override def saveUser(usuarioParaGuardar: Usuario): F[Usuario] =
-    val insertNewUserSQL = sql"INSERT INTO ${Tables.UserTableName} ".query[Usuario].unique
+    val insertNewUserSQL =
+      (sql"INSERT INTO ${Tables.UserTableName} (id, nombre, email, contraseña, tipo) " ++
+        sql"VALUES (${usuarioParaGuardar.id}, ${usuarioParaGuardar.nombre}, ${usuarioParaGuardar.email}, ${usuarioParaGuardar.contraseña}, ${usuarioParaGuardar.tipo})")
+        .update
+        .withUniqueGeneratedKeys[Usuario]("id", "nombre", "email", "contraseña", "tipo")
     insertNewUserSQL.transact(transactor)
 
-  override def findById(id: Int): F[Usuario] = ???
+  override def findById(id: Int): F[Option[Usuario]] =
+    val findUserById = sql"SELECT id, nombre, email, contraseña, tipo FROM ${Tables.UserTableName} WHERE id = $id"
+      .query[Usuario]
+      .option
+    findUserById.transact(transactor)
+    
   override def update(id: Int, updateData: Usuario): F[Usuario] = ???
   override def deleteUser(id: Int): F[Unit] = ???

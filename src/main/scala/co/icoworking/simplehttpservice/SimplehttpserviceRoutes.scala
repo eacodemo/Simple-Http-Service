@@ -26,10 +26,10 @@ object SimplehttpserviceRoutes:
     import dsl.*
     HttpRoutes.of[F] {
       case GET -> Root / "userservice" / id =>
-        for {
-          user: Usuario <- userService.findUser(id.toInt)
-          response      <- Ok(user)
-        } yield response
+        userService.findUserById(id.toInt).flatMap {
+          case Some(user) => Ok(user)
+          case None       => NotFound()
+        }
     }
     
     

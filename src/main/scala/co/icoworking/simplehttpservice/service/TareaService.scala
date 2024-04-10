@@ -8,7 +8,7 @@ trait TareaService[F[_]]:
   def encontrarTarea(id: Int): F[Tarea]
 
 class TareaServiceImpl[F[_]: Applicative](tareaRepository: TareaRepository[F]) extends TareaService[F]:
-  def encontrarTarea(id: Int): F[Tarea] = tareaRepository.encontrarPorId(id)
+  def encontrarTarea(id: Int): F[Tarea] = tareaRepository.findById(id)
 
 object TareaService:
   def impl[F[_] : Applicative](tr: TareaRepository[F]): TareaService[F] = new TareaServiceImpl[F](tareaRepository = tr) {}

@@ -7,6 +7,7 @@ import co.icoworking.simplehttpservice.model.*
 import cats.effect.Async
 import doobie._
 import doobie.implicits._
+import cats.syntax.functor._
 
 object Tables{
   val UserTableName = "Usuario"
@@ -46,4 +47,13 @@ class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) exten
     findUserById.transact(transactor)
     
   override def update(id: Int, updateData: Usuario): F[Usuario] = ???
-  override def deleteUser(id: Int): F[Unit] = ???
+  override def deleteUser(id: Int): F[Unit] = 
+    val deleteUser =
+      sql"DELETE FROM ${Tables.UserTableName} WHERE id = $id"
+        .update
+        .run
+        .transact(transactor)
+        .void
+    deleteUser
+    
+    

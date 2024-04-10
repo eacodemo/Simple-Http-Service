@@ -11,6 +11,7 @@ import cats.syntax.functor._
 
 object Tables{
   val UserTableName = "Usuario"
+  val TareaTableName = "Tarea"
 }
 // Interface CRUD para Usuario
 trait UserRepositoryI[F[_] : Applicative]:

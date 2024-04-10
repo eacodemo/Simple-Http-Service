@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - 6379:6379
+    environment:
+      - POSTGRES_PASSWORD=mypass
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
+

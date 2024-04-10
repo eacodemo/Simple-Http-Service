@@ -48,7 +48,8 @@ object Proyecto:
     )
   given [F[_]]: EntityEncoder[F, Proyecto] = jsonEncoderOf[F,Proyecto]
 
-case class HistoriaUsuario(id: Int,
+case class HistoriaUsuario(
+                           id: Int,
                            detalles: String,
                            criteriosAceptacion: String,
                            estado: String,

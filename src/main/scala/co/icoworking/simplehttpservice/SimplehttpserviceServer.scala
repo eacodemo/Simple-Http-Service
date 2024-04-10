@@ -2,8 +2,8 @@ package co.icoworking.simplehttpservice
 
 import cats.effect.kernel.Resource
 import cats.effect.Async
-import co.icoworking.simplehttpservice.repository.{TareaRepository, UserRepository}
-import co.icoworking.simplehttpservice.service.{TareaService, UserService}
+import co.icoworking.simplehttpservice.repository.{HistoriaUsuarioRepository, ProyectoRepository, TareaRepository, UserRepository}
+import co.icoworking.simplehttpservice.service.{HistoriaUsuarioService, ProyectoService, TareaService, UserService}
 import com.comcast.ip4s.*
 import doobie.Transactor
 import fs2.io.net.Network
@@ -35,10 +35,14 @@ object SimplehttpserviceServer:
       // user http service
       val userService = UserService.impl[F](ur = new UserRepository(xa))
       val tareaService = TareaService.impl[F](tr = new TareaRepository(xa))
-
+      val proyectosService = ProyectoService.impl[F](pr = new ProyectoRepository(xa))
+      val historiaUService = HistoriaUsuarioService.impl[F](har = new HistoriaUsuarioRepository(xa))
+      
       val httpApp = (
         SimplehttpserviceRoutes.userServiceRoutes[F](userService) <+>
-          SimplehttpserviceRoutes.tareaServiceRoutes[F](tareaService)
+          SimplehttpserviceRoutes.tareaServiceRoutes[F](tareaService)//<+>
+          //SimplehttpserviceRoutes.ProyectoServiceRoutes[F](proyectosService)<+>
+          //SimplehttpserviceRoutes.HistoriaUsuarioServiceRoutes[F](historiaUService)
         ).orNotFound
 
       Logger.httpApp(true, true)(httpApp)

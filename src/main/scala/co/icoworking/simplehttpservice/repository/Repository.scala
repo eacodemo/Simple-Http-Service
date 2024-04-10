@@ -29,7 +29,7 @@ trait ProyectoRepositoryI[F[_]: Applicative]:
   def findById(id: Int): F[Proyecto]
 
 trait HistoriaUsuarioRepositoryI[F[_] : Applicative]:
-  def saveHA(guardarHA: HistoriaUsuario): F[HistoriaUsuario]
+  def saveHU(guardarHU: HistoriaUsuario): F[HistoriaUsuario]
   def findById(id: Int): F[HistoriaUsuario]
 
 class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) extends UserRepositoryI[F]:
@@ -71,5 +71,5 @@ class ProyectoRepository[F[_]: Applicative: Async](transactor: Transactor[F]) ex
   override def findById(id: Int): F[Proyecto] = ???
 
 class HistoriaUsuarioRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends  HistoriaUsuarioRepositoryI[F]:
-  override def saveHA(guardarHA: HistoriaUsuario): F[HistoriaUsuario] = ???
+  override def saveHU(guardarHU: HistoriaUsuario): F[HistoriaUsuario] = ???
   override def findById(id: Int): F[HistoriaUsuario] = ???

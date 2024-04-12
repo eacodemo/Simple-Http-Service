@@ -13,6 +13,10 @@ lazy val root = (project in file("."))
     name := "simple-http-service",
     version := "0.0.1-SNAPSHOT",
     scalaVersion := "3.3.0",
+    scalacOptions ++= Seq(
+      "utf-8", // Specify character encoding used by source files.
+      "-explaintypes", // Explain type errors in more detail.
+    ),
     javacOptions ++= Seq("-source", "17", "-target", "17"),
     libraryDependencies ++= Seq(
       "org.typelevel"   %% "cats-effect"         % catsEffectVersion,

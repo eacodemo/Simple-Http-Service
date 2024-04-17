@@ -8,6 +8,7 @@ import cats.effect.Async
 import doobie._
 import doobie.implicits._
 import cats.syntax.functor._
+import scala.annotation.nowarn
 
 object Tables{
   val UserTableName = "Usuario"
@@ -59,17 +60,18 @@ class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) exten
     deleteUser
 
 
-class TareaRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends TareaRepositoryI[F]:
+
+class TareaRepository[F[_]: Applicative: Async](@nowarn transactor: Transactor[F]) extends TareaRepositoryI[F]:
   override def saveTarea(guardarTarea: Tarea): F[Tarea] =
     val insertNewTareaSql = sql"INSERT INTO Tarea ()".query[Tarea].unique
     insertNewTareaSql.transact(transactor)
   override def findById(id: Int): F[Tarea] = ???
 
 
-class ProyectoRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends  ProyectoRepositoryI[F]:
+class ProyectoRepository[F[_]: Applicative: Async](@nowarn transactor: Transactor[F]) extends  ProyectoRepositoryI[F]:
   override def saveProject(guardarProyecto: Proyecto): F[Proyecto] = ???
   override def findById(id: Int): F[Proyecto] = ???
 
-class HistoriaUsuarioRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends  HistoriaUsuarioRepositoryI[F]:
+class HistoriaUsuarioRepository[F[_]: Applicative: Async](@nowarn transactor: Transactor[F]) extends  HistoriaUsuarioRepositoryI[F]:
   override def saveHU(guardarHU: HistoriaUsuario): F[HistoriaUsuario] = ???
   override def findById(id: Int): F[HistoriaUsuario] = ???

@@ -19,11 +19,11 @@ import scala.annotation.nowarn
 object SimplehttpserviceServer:
   def run[F[_]: Async: Network]: F[Nothing] = {
     val DriverJDBC = "org.postgresql.Driver"
-    val URLJDBC = "jdbc:postgresql:world"
+    val URLJDBC = "jdbc:postgresql://127.0.0.1:5432/"
     val UserDabase = "postgres"
-    val PasswordDabase = "password"
+    val PasswordDabase = "mypass"
     def runMigrations(): Unit =
-      val uri = "classpath:" + "db.migration"
+      val uri = "src/main/resources/migration"
       Flyway
         .configure()
         .dataSource(

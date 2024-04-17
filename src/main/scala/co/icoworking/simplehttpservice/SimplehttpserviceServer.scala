@@ -1,7 +1,8 @@
 package co.icoworking.simplehttpservice
 
 import cats.effect.kernel.Resource
-import cats.effect.{Async}
+import cats.effect.Async
+
 import co.icoworking.simplehttpservice.repository.{HistoriaUsuarioRepository, ProyectoRepository, TareaRepository, UserRepository}
 import co.icoworking.simplehttpservice.service.{HistoriaUsuarioService, ProyectoService, TareaService, UserService}
 import com.comcast.ip4s.*
@@ -53,6 +54,7 @@ object SimplehttpserviceServer:
       val tareaService = TareaService.impl[F](tr = new TareaRepository(xa))
       @nowarn val proyectosService = ProyectoService.impl[F](pr = new ProyectoRepository(xa))
       @nowarn val historiaUService = HistoriaUsuarioService.impl[F](har = new HistoriaUsuarioRepository(xa))
+
       
       val httpApp = (
         SimplehttpserviceRoutes.userServiceRoutes[F](userService) <+>
@@ -65,9 +67,8 @@ object SimplehttpserviceServer:
     }
     val IpHttp: Ipv4Address = ipv4"0.0.0.0"
     val PortHttp: Port = port"8080"
-
     val application: Resource[F, Unit] = for {
-      // Integrar Flyway DB DDL SQL
+      // Integrar Flyway DB DDL SQL 
       _ <- EmberServerBuilder.default[F]
           .withHost(IpHttp)
           .withPort(PortHttp)

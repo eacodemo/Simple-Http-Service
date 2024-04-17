@@ -5,10 +5,9 @@ import cats.*
 import cats.effect.*
 import co.icoworking.simplehttpservice.model.*
 import cats.effect.Async
-import doobie.*
-import doobie.implicits.*
-import cats.syntax.functor.*
-
+import doobie._
+import doobie.implicits._
+import cats.syntax.functor._
 import scala.annotation.nowarn
 
 object Tables{
@@ -59,6 +58,7 @@ class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) exten
         .transact(transactor)
         .void
     deleteUser
+
 
 
 class TareaRepository[F[_]: Applicative: Async](@nowarn transactor: Transactor[F]) extends TareaRepositoryI[F]:

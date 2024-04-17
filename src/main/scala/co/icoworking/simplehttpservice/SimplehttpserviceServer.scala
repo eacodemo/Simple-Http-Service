@@ -1,51 +1,82 @@
 package co.icoworking.simplehttpservice
 
-import cats.effect.{Async, IO}
-import co.icoworking.simplehttpservice.repository.TareaRepository
-import co.icoworking.simplehttpservice.service.{TareaService, UserService}
+import cats.effect.kernel.Resource
+import cats.effect.{Async}
+import co.icoworking.simplehttpservice.repository.{HistoriaUsuarioRepository, ProyectoRepository, TareaRepository, UserRepository}
+import co.icoworking.simplehttpservice.service.{HistoriaUsuarioService, ProyectoService, TareaService, UserService}
 import com.comcast.ip4s.*
 import doobie.Transactor
-import doobie.util.transactor.Transactor.Aux
 import fs2.io.net.Network
-import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.middleware.Logger
 import cats.implicits.toSemigroupKOps
+import org.flywaydb.core.Flyway
+import org.http4s.HttpApp
+
+import scala.annotation.nowarn
 
 object SimplehttpserviceServer:
   def run[F[_]: Async: Network]: F[Nothing] = {
-    for {
-      client <- EmberClientBuilder.default[F].build // todo Change me
-      //helloWorldAlg: HelloWorld[F] = HelloWorld.impl[F]
+    val DriverJDBC = "org.postgresql.Driver"
+    val URLJDBC = "jdbc:postgresql://127.0.0.1:5432/"
+    val UserDabase = "postgres"
+    val PasswordDabase = "mypass"
+    def runMigrations(): Unit =
+      val uri = "src/main/resources/migration"
+      Flyway
+        .configure()
+        .dataSource(
+          URLJDBC,
+          UserDabase,
+          PasswordDabase
+        )
+        .locations(uri)
+        .load()
+        .migrate()
+      ()
 
-      xa = Transactor.fromDriverManager[F](
-        driver = "org.postgresql.Driver", // JDBC driver classname
-        url = "jdbc:postgresql:world",    // Connect URL
-        user = "postgres",                // Database user name
-        password = "password",            // Database password
-        logHandler = None                 // Don't setup logging for now. See Logging page for how to log events in detail
+    def connectionWithDabase = { // solo y solo una unica responsabilidad!!
+      Transactor.fromDriverManager[F](
+        driver     = DriverJDBC, // JDBC driver classname
+        url        = URLJDBC, // Connect URL
+        user       = UserDabase, // Database user name
+        password   = PasswordDabase, // Database password
+        logHandler = None // Don't setup logging for now. See Logging page for how to log events in detail
       )
-      repositorioUser = new co.icoworking.simplehttpservice.repository.UserRepository(xa)
+    }
+
+    val init: HttpApp[F] = {
+      val xa = connectionWithDabase
       // user http service
-      userService = UserService.impl[F](ur = repositorioUser)
-      repositorioTarea = new TareaRepository(xa)
-      tareaService = TareaService.impl[F](tr = repositorioTarea)
-      //resolver dependencias
+      val userService = UserService.impl[F](ur = new UserRepository(xa))
+      val tareaService = TareaService.impl[F](tr = new TareaRepository(xa))
+      @nowarn val proyectosService = ProyectoService.impl[F](pr = new ProyectoRepository(xa))
+      @nowarn val historiaUService = HistoriaUsuarioService.impl[F](har = new HistoriaUsuarioRepository(xa))
+      
+      val httpApp = (
+        SimplehttpserviceRoutes.userServiceRoutes[F](userService) <+>
+          SimplehttpserviceRoutes.tareaServiceRoutes[F](tareaService)//<+>
+          //SimplehttpserviceRoutes.ProyectoServiceRoutes[F](proyectosService)<+>
+          //SimplehttpserviceRoutes.HistoriaUsuarioServiceRoutes[F](historiaUService)
+        ).orNotFound
 
-      httpApp = (
-        //SimplehttpserviceRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
-          SimplehttpserviceRoutes.userServiceRoutes[F](userService)   <+>
-          SimplehttpserviceRoutes.tareaServiceRoutes[F](tareaService)
-      ).orNotFound
+      Logger.httpApp(true, true)(httpApp)
+    }
+    val IpHttp: Ipv4Address = ipv4"0.0.0.0"
+    val PortHttp: Port = port"8080"
 
-      finalHttpApp = Logger.httpApp(true, true)(httpApp)
-
-      _ <- 
-        EmberServerBuilder.default[F]
-          .withHost(ipv4"0.0.0.0")
-          .withPort(port"8080")
-          .withHttpApp(finalHttpApp)
+    val application: Resource[F, Unit] = for {
+      // Integrar Flyway DB DDL SQL
+      _ <- EmberServerBuilder.default[F]
+          .withHost(IpHttp)
+          .withPort(PortHttp)
+          .withHttpApp(init)
           .build
-    } yield ()
-  }.useForever
+    } yield {
+      runMigrations()
+      ()
+    } // definicion de application // type Safe - > Nivel de los tipos
+
+    application.useForever // arrancamos el motor - app
+  }

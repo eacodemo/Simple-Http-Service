@@ -13,6 +13,10 @@ lazy val root = (project in file("."))
     name := "simple-http-service",
     version := "0.0.1-SNAPSHOT",
     scalaVersion := "3.3.0",
+    scalacOptions ++= Seq(
+      "utf-8", // Specify character encoding used by source files.
+      "-explaintypes", // Explain type errors in more detail.
+    ),
     javacOptions ++= Seq("-source", "17", "-target", "17"),
     libraryDependencies ++= Seq(
       "org.typelevel"   %% "cats-effect"         % catsEffectVersion,
@@ -25,7 +29,8 @@ lazy val root = (project in file("."))
       "org.tpolecat"    %% "doobie-core"        % doobieVersion, // Doobie CORE SQL TX
       "org.tpolecat"    %% "doobie-postgres"    % doobieVersion, // conecion con SQL POTGRES
       "org.tpolecat"    %% "doobie-specs2"      % doobieVersion          % Test, // para Testos unitarion
-      "com.geirsson" %% "metaconfig-core"        % metalConfVersion, // conf serializer from FS => ADT
+      "com.geirsson"    %% "metaconfig-core"    % metalConfVersion, // conf serializer from FS => ADT
+      "org.flywaydb"    % "flyway-core"         % "6.5.7",
       // logs de tiempo de arrance - (ITOPS / DevOPS / Developer / QA / -> PO)
       "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
       // unit tests

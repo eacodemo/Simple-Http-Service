@@ -2,47 +2,76 @@ package co.icoworking.simplehttpservice.repository
 
 import doobie.util.transactor.Transactor
 import cats.*
-import cats.effect.IO
-import cats.implicits.*
 import cats.effect.*
 import co.icoworking.simplehttpservice.model.*
-import doobie.util.transactor.Transactor.Aux
-import doobie.WeakAsync.doobieWeakAsyncForAsync
-import fs2.Compiler.Target.forConcurrent
-import fs2.Compiler.Target.forSync
 import cats.effect.Async
-import cats.effect.syntax.all._
-import doobie._
-import doobie.implicits._
+import doobie.*
+import doobie.implicits.*
+import cats.syntax.functor.*
 
+import scala.annotation.nowarn
+
+object Tables{
+  val UserTableName = "Usuario"
+  val TareaTableName = "Tarea"
+}
 // Interface CRUD para Usuario
 trait UserRepositoryI[F[_] : Applicative]:
   def saveUser(usuarioParaGuardar: Usuario): F[Usuario]
-  def findById(id: Int): F[Usuario]
+  def findById(id: Int): F[Option[Usuario]]
   def update(id: Int, updateData: Usuario): F[Usuario]
   def deleteUser(id: Int): F[Unit]
 
-
 trait TareaRepositoryI[F[_]: Applicative]:
   def saveTarea(guardarTarea: Tarea): F[Tarea]
-  def encontrarPorId(id: Int): F[Tarea]
-  
-class TareaRepository[F[_]: Applicative: Async](transactor: Transactor[F]) extends TareaRepositoryI[F]:
-  def saveTarea(guardarTarea: Tarea): F[Tarea] =
-    val insertNewTareaSql = sql"INSERT INTO ...".query[Tarea].unique
-    insertNewTareaSql.transact(transactor)
-  def encontrarPorId(id: Int): F[Tarea] = ???
+  def findById(id: Int): F[Tarea]
 
+trait ProyectoRepositoryI[F[_]: Applicative]:
+  def saveProject(guardarProyecto: Proyecto): F[Proyecto]
+  def findById(id: Int): F[Proyecto]
+
+trait HistoriaUsuarioRepositoryI[F[_] : Applicative]:
+  def saveHU(guardarHU: HistoriaUsuario): F[HistoriaUsuario]
+  def findById(id: Int): F[HistoriaUsuario]
 
 class UserRepository[F[_] : Applicative: Async](transactor: Transactor[F]) extends UserRepositoryI[F]:
+  
   override def saveUser(usuarioParaGuardar: Usuario): F[Usuario] =
-
-    val insertNewUserSQL = sql"INSERT INTO ...".query[Usuario].unique
-    //insertNewUserSQL.transact(transactor) // executa SQL en IO!!!!
-    //val program1: doobie.ConnectionIO[Int] = 42.pure[ConnectionIO]
-    println(s"$transactor $usuarioParaGuardar $insertNewUserSQL")
+    val insertNewUserSQL =
+      (sql"INSERT INTO ${Tables.UserTableName} (id, nombre, email, contraseña, tipo) " ++
+        sql"VALUES (${usuarioParaGuardar.id}, ${usuarioParaGuardar.nombre}, ${usuarioParaGuardar.email}, ${usuarioParaGuardar.contraseña}, ${usuarioParaGuardar.tipo})")
+        .update
+        .withUniqueGeneratedKeys[Usuario]("id", "nombre", "email", "contraseña", "tipo")
     insertNewUserSQL.transact(transactor)
 
-  override def findById(id: Int): F[Usuario] = ???
+  override def findById(id: Int): F[Option[Usuario]] =
+    val findUserById = sql"SELECT id, nombre, email, contraseña, tipo FROM ${Tables.UserTableName} WHERE id = $id"
+      .query[Usuario]
+      .option
+    findUserById.transact(transactor)
+    
   override def update(id: Int, updateData: Usuario): F[Usuario] = ???
-  override def deleteUser(id: Int): F[Unit] = ???
+  override def deleteUser(id: Int): F[Unit] = 
+    val deleteUser =
+      sql"DELETE FROM ${Tables.UserTableName} WHERE id = $id"
+        .update
+        .run
+        .transact(transactor)
+        .void
+    deleteUser
+
+
+class TareaRepository[F[_]: Applicative: Async](@nowarn transactor: Transactor[F]) extends TareaRepositoryI[F]:
+  override def saveTarea(guardarTarea: Tarea): F[Tarea] =
+    val insertNewTareaSql = sql"INSERT INTO Tarea ()".query[Tarea].unique
+    insertNewTareaSql.transact(transactor)
+  override def findById(id: Int): F[Tarea] = ???
+
+
+class ProyectoRepository[F[_]: Applicative: Async](@nowarn transactor: Transactor[F]) extends  ProyectoRepositoryI[F]:
+  override def saveProject(guardarProyecto: Proyecto): F[Proyecto] = ???
+  override def findById(id: Int): F[Proyecto] = ???
+
+class HistoriaUsuarioRepository[F[_]: Applicative: Async](@nowarn transactor: Transactor[F]) extends  HistoriaUsuarioRepositoryI[F]:
+  override def saveHU(guardarHU: HistoriaUsuario): F[HistoriaUsuario] = ???
+  override def findById(id: Int): F[HistoriaUsuario] = ???

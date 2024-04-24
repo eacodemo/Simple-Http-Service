@@ -22,7 +22,7 @@ object SimplehttpserviceServer:
     val DriverJDBC = "org.postgresql.Driver"
     val URLJDBC = "jdbc:postgresql://127.0.0.1:5432/"
     val UserDabase = "postgres"
-    val PasswordDabase = "mypass"
+    val PasswordDatabase = "mypass"
     def runMigrations(): Unit =
       val uri = "src/main/resources/migration"
       Flyway
@@ -30,7 +30,7 @@ object SimplehttpserviceServer:
         .dataSource(
           URLJDBC,
           UserDabase,
-          PasswordDabase
+          PasswordDatabase
         )
         .locations(uri)
         .load()
@@ -42,7 +42,7 @@ object SimplehttpserviceServer:
         driver     = DriverJDBC, // JDBC driver classname
         url        = URLJDBC, // Connect URL
         user       = UserDabase, // Database user name
-        password   = PasswordDabase, // Database password
+        password   = PasswordDatabase, // Database password
         logHandler = None // Don't setup logging for now. See Logging page for how to log events in detail
       )
     }

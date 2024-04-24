@@ -12,6 +12,6 @@ final case class DatabaseConfiguration(
 object DatabaseConfiguration:
   implicit lazy val surface: Surface[DatabaseConfiguration] = deriveSurface[DatabaseConfiguration]
   val defaultDriver = "org.postgresql.Driver"
-  val defaultUrl = "jdbc:postgresql:world"
+  val defaultUrl = "jdbc:postgresql://127.0.0.1:5432/"
   val user = "postgres"
-  val password = "password"
+  val password = "mypass"
